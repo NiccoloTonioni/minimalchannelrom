@@ -1,47 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="description"
-        content="VIVALDy: A Hybrid Generative Reduced-Order Model for Turbulent Flows.">
-  <meta name="keywords" content="Vivaldy, Reduced-Order Models, Turbulent Flows, Vortex-Induced Vibrations, Variational Autoencoders, Generative Adversarial Networks, Transformers">
+        content="A hybrid generative reduced-order model (β-VAE-GAN + sensor-conditioned Transformer) that forecasts near-wall turbulence in a Minimal Flow Unit from three point sensors.">
+  <meta name="keywords" content="Reduced-Order Models, Minimal Flow Unit, Near-Wall Turbulence, Turbulent Flows, Variational Autoencoders, Generative Adversarial Networks, Transformers, Easy Attention, AdaLN-Zero">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>VIVALDy: A Hybrid Generative Reduced-Order Model for Turbulent Flows</title>
+  <title>A Hybrid Generative Reduced-Order Model for the Minimal Flow Unit</title>
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src=""></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-
-    gtag('js', new Date());
-
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
-
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
 
   <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
   <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
   <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="./static/images/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="./static/images/favicon-32.png">
+  <link rel="apple-touch-icon" href="./static/images/apple-touch-icon.png">
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+  <script defer src="./static/js/index.js"></script>
 </head>
 <body>
 
+<!-- ===================================================================== -->
+<!-- NAVBAR                                                                -->
+<!-- ===================================================================== -->
 <nav class="navbar" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
@@ -52,107 +36,80 @@
   </div>
   <div class="navbar-menu">
     <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://keunhong.com">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
+      <a class="navbar-item" href="https://niccolotonioni.github.io">
+        <span class="icon"><i class="fas fa-home"></i></span>
       </a>
 
       <div class="navbar-item has-dropdown is-hoverable">
-        <a class="navbar-link">
-          Sections
-        </a>
+        <a class="navbar-link">Sections</a>
         <div class="navbar-dropdown">
-          <a class="navbar-item" href="#framework">
-            Framework Overview
-          </a>
-          <a class="navbar-item" href="#dataset">
-            Dataset
-          </a>
-          <a class="navbar-item" href="#latent-space">
-            Informative Latent Space
-          </a>
-          <a class="navbar-item" href="#vivaldy-inference">
-            Vivaldy Inference
-          </a>
+          <a class="navbar-item" href="#overview">Overview</a>
+          <a class="navbar-item" href="#mfu">Minimal Flow Unit</a>
+          <a class="navbar-item" href="#framework">Framework</a>
+          <a class="navbar-item" href="#compression">Compression</a>
+          <a class="navbar-item" href="#latent-space">Interpretable Latent Space</a>
+          <a class="navbar-item" href="#forecasting">Long-Horizon Forecasting</a>
+          <a class="navbar-item" href="#outlook">Limitations &amp; Outlook</a>
+          <a class="navbar-item" href="#BibTeX">BibTeX</a>
+        </div>
+      </div>
+
+      <div class="navbar-item has-dropdown is-hoverable">
+        <a class="navbar-link">More Research</a>
+        <div class="navbar-dropdown">
+          <a class="navbar-item" href="https://vivaldy.github.io">VIVALDy (Phys. Rev. Fluids, 2026)</a>
         </div>
       </div>
     </div>
-
   </div>
 </nav>
 
 
+<!-- ===================================================================== -->
+<!-- HERO: title, authors, links                                           -->
+<!-- ===================================================================== -->
 <section class="hero">
   <div class="hero-body">
     <div class="container is-max-desktop">
       <div class="columns is-centered">
         <div class="column has-text-centered">
-          <h1 class="title is-2 publication-title">VIVALDy: A Hybrid Generative Reduced-Order Model for Turbulent Flows</h1>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://niccolotonioni.github.io">Niccolò Tonioni</a><sup>1</sup>,</span>
-            <span class="author-block">
-              Lionel Agostini</a><sup>1</sup>,</span>
-            <span class="author-block">
-              Franck Kehervé</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              Laurent Cordier</a><sup>1</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://www.vinuesalab.com">Ricardo Vinuesa</a><sup>2,</sup><sup>3</sup>,
-          </div>
+          <h1 class="title is-2 publication-title">A Hybrid Generative Reduced-Order Model for the Minimal Flow Unit</h1>
 
           <div class="is-size-5 publication-authors">
+            <span class="author-block"><a href="https://niccolotonioni.github.io">Niccolò Tonioni</a><sup>1</sup>,</span>
+            <span class="author-block"><a href="https://lionelago.github.io/website_lab/">Lionel Agostini</a><sup>1</sup>,</span>
+            <span class="author-block">Marcial Sanchis-Agudo<sup>2</sup>,</span>
+            <span class="author-block">Mohammad Umair<sup>3,2</sup>,</span>
+            <span class="author-block">Franck Kerhervé<sup>1</sup>,</span>
+            <span class="author-block">Laurent Cordier<sup>1</sup>,</span>
+            <span class="author-block"><a href="https://www.vinuesalab.com">Ricardo Vinuesa</a><sup>4,2</sup></span>
+          </div>
+
+          <div class="is-size-6 publication-authors affiliations">
             <span class="author-block"><sup>1</sup>Pprime Institute, Université de Poitiers</span>
-            <span class="author-block"><sup>2</sup>Department of Aerospace Engineering, University of Michigan</span>
-            <span class="author-block"><sup>3</sup>FLOW, KTH Royal Institute of Technology</span>
+            <span class="author-block"><sup>2</sup>FLOW, KTH Royal Institute of Technology</span>
+            <span class="author-block"><sup>3</sup>LEGI, Université Grenoble Alpes</span>
+            <span class="author-block"><sup>4</sup>Department of Aerospace Engineering, University of Michigan</span>
           </div>
 
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://link.aps.org/doi/10.1103/t7d2-mv5c"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <!-- Arxix Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2509.24965"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <!-- Code Link. -->
-              <span class="link-block">
-                <a href="https://github.com/NiccoloTonioni/vivaldy_code.git"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                </a>
-              </span>
-              <!-- Dataset Link. -->
-              <span class="link-block">
-                <a href="https://doi.org/10.57745/HPA87O"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="far fa-images"></i>
-                  </span>
-                  <span>Data</span>
-                </a>
-            </div>
+          <div class="publication-venue">International Journal of Heat and Fluid Flow, vol. 122, 110784 (2026)</div>
 
+          <div class="publication-links">
+            <span class="link-block">
+              <a href="https://www.sciencedirect.com/science/article/pii/S0142727X26005503" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fas fa-file-pdf"></i></span><span>Paper</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://arxiv.org/abs/2606.09044" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="ai ai-arxiv"></i></span><span>arXiv</span>
+              </a>
+            </span>
+            <span class="link-block">
+              <a href="https://github.com/NiccoloTonioni/minimal_channel_generative_code" class="external-link button is-normal is-rounded is-dark">
+                <span class="icon"><i class="fab fa-github"></i></span><span>Code</span>
+              </a>
+            </span>
           </div>
         </div>
       </div>
@@ -160,451 +117,517 @@
   </div>
 </section>
 
-<section class="hero teaser">
+
+<!-- ===================================================================== -->
+<!-- TEASER: DNS vs prediction animation + key numbers                    -->
+<!-- ===================================================================== -->
+<section class="hero teaser" id="overview">
   <div class="container is-max-desktop">
     <div class="hero-body">
-      <!-- Case Selection Buttons -->
-      <div class="case-selector">
-        <button class="case-btn active" data-case="case1">Case 1 - Upper Branch</button>
-        <button class="case-btn" data-case="case2">Case 2 - Transition Branch</button>
-        <button class="case-btn" data-case="case3">Case 3 - Lower Branch</button>
-      </div>
-      
-      <!-- Interactive Image Comparison -->
-      <div class="image-comparison-container">
-        <div class="image-comparison-wrapper">
-          <!-- Ground Truth Image (right side) -->
-          <img class="comparison-image ground-truth" 
-               src="./static/images/ground_truth_case_1.png"  
-               alt="Ground Truth Flow Field"
-               id="ground-truth-img">
-          
-          <!-- Reconstruction Image (left side) -->
-          <img class="comparison-image reconstruction" 
-               src="./static/images/reconstruction_case_1.png" 
-               alt="VIVALDy Reconstruction"
-               id="reconstruction-img">
-          
-          <!-- Slider -->
-          <div class="comparison-slider">
-            <div class="slider-handle"></div>
-          </div>
-          
-          <!-- Labels -->
-          <div class="comparison-labels">
-            <span class="label-left">VIVALDy Reconstruction</span>
-            <span class="label-right">Ground Truth</span>
-          </div>
-        </div>
-      </div>
-      
-      <h2 class="subtitle has-text-centered">
-        <span class="nerf">VIVALDy</span> enables accurate flow field reconstruction from minimal sensor data. 
-        <br><small>Select a case above and drag the slider to compare reconstruction vs. ground truth.</small>
+
+      <video class="teaser-video" autoplay muted loop playsinline preload="auto"
+             src="./static/videos/latent_and_flow.mp4" poster="./static/videos/latent_and_flow_poster.png"
+             aria-label="Forecast and DNS streamwise velocity fields at y+ = 14 next to the four latent variables"></video>
+      <p class="media-caption">
+        Test set, t<sup>+</sup>&nbsp;≈&nbsp;14,300–16,100 (3&nbsp;t<sup>+</sup> per frame). <b>Left:</b> streamwise velocity
+        fluctuation u′<sup>+</sup> at y<sup>+</sup>&nbsp;=&nbsp;14, forecast (top) and DNS (bottom). The circles mark the three sensors.
+        <b>Right:</b> the four latent variables, forecast (sea-green) and encoded DNS (grey). The window contains the long
+        quiescent interval, where the streaks straighten and ζ<sub>3</sub>, ζ<sub>4</sub> fall silent.
+      </p>
+
+      <h2 class="subtitle has-text-centered teaser-subtitle">
+        After a 128&nbsp;t<sup>+</sup> warm-up, the model is driven only by <b>three point velocity sensors</b>.
+        Each flow field is decoded from a <b>four-dimensional latent state</b>, and the forecast stays stable over <b>17,241&nbsp;t<sup>+</sup></b>.
       </h2>
+
+      <div class="key-numbers">
+        <div class="key-number"><span class="kn-value">4</span><span class="kn-label">latent variables</span></div>
+        <div class="key-number"><span class="kn-value">3</span><span class="kn-label">point sensors</span></div>
+        <div class="key-number"><span class="kn-value">88%</span><span class="kn-label">TKE recovered by compression</span></div>
+        <div class="key-number"><span class="kn-value">82%</span><span class="kn-label">TKE recovered by the forecast</span></div>
+        <div class="key-number"><span class="kn-value">17,241&nbsp;t<sup>+</sup></span><span class="kn-label">forecast horizon</span></div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<style>
-/* Case Selector Styles */
-.case-selector {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
 
-.case-btn {
-  padding: 10px 20px;
-  background: #f5f5f5;
-  border: 2px solid #ddd;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  color: #666;
-}
-
-.case-btn:hover {
-  background: #e9e9e9;
-  border-color: #999;
-}
-
-.case-btn.active {
-  background: #007bff;
-  border-color: #007bff;
-  color: white;
-}
-
-/* Existing comparison styles... */
-.image-comparison-container {
-  position: relative;
-  max-width: 800px;
-  margin: 0 auto 2rem;
-}
-
-.image-comparison-wrapper {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.comparison-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  transition: opacity 0.3s ease;
-}
-
-.reconstruction {
-  position: absolute;
-  top: 0;
-  left: 0;
-  clip-path: inset(0 50% 0 0);
-  transition: clip-path 0.1s ease;
-}
-
-.comparison-slider {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 2px;
-  height: 100%;
-  background: #666666;
-  cursor: ew-resize;
-  transform: translateX(-50%);
-}
-
-.slider-handle {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 20px;
-  height: 20px;
-  background: #666666;
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-.comparison-labels {
-  position: absolute;
-  top: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: space-between;
-  padding: 0 20px;
-  font-size: 0.9rem;
-  font-weight: bold;
-  color: #333333;
-  text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
-}
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const container = document.querySelector('.image-comparison-wrapper');
-  const slider = document.querySelector('.comparison-slider');
-  const reconstruction = document.querySelector('.reconstruction');
-  const groundTruthImg = document.getElementById('ground-truth-img');
-  const reconstructionImg = document.getElementById('reconstruction-img');
-  const caseButtons = document.querySelectorAll('.case-btn');
-  
-  // Image paths for different cases
-  const imagePaths = {
-    case1: {
-      groundTruth: './static/images/ground_truth_case_1.png',
-      reconstruction: './static/images/reconstruction_case_1.png'
-    },
-    case2: {
-      groundTruth: './static/images/ground_truth_case_2.png',
-      reconstruction: './static/images/reconstruction_case_2.png'
-    },
-    case3: {
-      groundTruth: './static/images/ground_truth_case_3.png',
-      reconstruction: './static/images/reconstruction_case_3.png'
-    }
-  };
-  
-  let isDragging = false;
-  
-  // Case selection functionality
-  caseButtons.forEach(button => {
-    button.addEventListener('click', function() {
-      // Update active button
-      caseButtons.forEach(btn => btn.classList.remove('active'));
-      this.classList.add('active');
-      
-      // Get selected case
-      const selectedCase = this.dataset.case;
-      const paths = imagePaths[selectedCase];
-      
-      // Update images with fade effect
-      groundTruthImg.style.opacity = '0';
-      reconstructionImg.style.opacity = '0';
-      
-      setTimeout(() => {
-        groundTruthImg.src = paths.groundTruth;
-        reconstructionImg.src = paths.reconstruction;
-        groundTruthImg.style.opacity = '1';
-        reconstructionImg.style.opacity = '1';
-      }, 150);
-    });
-  });
-  
-  // Slider functionality (same as before)
-  function updateSlider(x) {
-    const rect = container.getBoundingClientRect();
-    const percentage = Math.max(0, Math.min(100, (x - rect.left) / rect.width * 100));
-    
-    slider.style.left = percentage + '%';
-    reconstruction.style.clipPath = `inset(0 ${100 - percentage}% 0 0)`;
-  }
-  
-  // Mouse events
-  slider.addEventListener('mousedown', function(e) {
-    isDragging = true;
-    e.preventDefault();
-  });
-  
-  document.addEventListener('mousemove', function(e) {
-    if (isDragging) {
-      updateSlider(e.clientX);
-    }
-  });
-  
-  document.addEventListener('mouseup', function() {
-    isDragging = false;
-  });
-  
-  // Touch events
-  slider.addEventListener('touchstart', function(e) {
-    isDragging = true;
-    e.preventDefault();
-  });
-  
-  document.addEventListener('touchmove', function(e) {
-    if (isDragging) {
-      updateSlider(e.touches[0].clientX);
-    }
-  });
-  
-  document.addEventListener('touchend', function() {
-    isDragging = false;
-  });
-  
-  // Click to move slider
-  container.addEventListener('click', function(e) {
-    if (e.target !== slider && !slider.contains(e.target)) {
-      updateSlider(e.clientX);
-    }
-  });
-});
-</script>
-
+<!-- ===================================================================== -->
+<!-- ABSTRACT                                                              -->
+<!-- ===================================================================== -->
 <section class="section">
   <div class="container is-max-desktop">
-    <!-- Abstract. -->
     <div class="columns is-centered has-text-centered">
       <div class="column is-four-fifths">
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            Developing reduced-order models applicable to fluid-dynamics problems involving complex geometries and different flow 
-            conditions remains a critical challenge for turbulent flows. This study introduces VIVALDy, a novel machine-learning framework
-            that employs a hybrid β-Variational Autoencoder-Generative Adversarial Network (β-VAE-GAN) architecture with masked convolutions 
-            to extract dominant flow features into a compact latent space while preserving fidelity at solid-fluid interfaces. A bidirectional 
-            transformer then models the temporal evolution of these features, learning to predict flow trajectories from minimal sensor inputs. 
-            This two-stage approach enables the transformer to map sensor measurements to dominant flow variables identified by the autoencoder, 
-            advancing reduced-order modeling capabilities for real-time flow prediction. The effectiveness of the framework is demonstrated through 
-            its application to a problem relevant to vortex-induced vibration (VIV) energy harvesting systems, reconstructing turbulent flow around 
-            a one-degree-of-freedom moving cylinder. Validated against experimental data spanning fluid-structure interaction regimes of interest, VIVALDy accurately 
-            predicts different flow states using only the cylinder displacement, demonstrating robust performance in both reconstruction 
-            accuracy and statistical fidelity across diverse operating conditions.
+            Wall-bounded turbulent flows play a central role in engineering and geophysical applications.
+            Most industrially relevant problems, however, are multi-query, requiring repeated evaluations of
+            the flow that are too expensive for high-fidelity simulations. This article presents a data-driven
+            surrogate model of wall-bounded turbulence that delivers long-horizon predictions from sparse
+            measurements. The architecture couples a β-VAE-GAN, which compresses the flow fields into a compact
+            latent manifold, with a sensor-conditioned Transformer that governs the latent dynamics. The model is
+            evaluated on the wall-parallel plane at y<sup>+</sup>&nbsp;=&nbsp;14, where the turbulent kinetic energy
+            peaks, in a Minimal Flow Unit at Re<sub>τ</sub>&nbsp;=&nbsp;200. On unseen test data, the β-VAE-GAN
+            recovers 88% of the turbulent kinetic energy within a four-dimensional latent space, against 76% for a
+            standard β-VAE. The latent coordinates separate the slow intermittency of the regeneration cycle from
+            the streamwise convection of near-wall structures, while preserving the conditional interactions between
+            the two, showing that the learnt representation retains the dynamical signature of the flow. From an
+            initialisation window of 128&nbsp;t<sup>+</sup> of encoded fields, the Transformer tracks the latent
+            trajectories over 17,241&nbsp;t<sup>+</sup>. When the predicted trajectories are decoded, the model
+            recovers 82% of the turbulent kinetic energy. It also reproduces the pacing of alternating active and
+            quiescent phases and the most frequent ejection and sweep events. These results present the framework
+            as a step forward towards surrogate models for closed-loop flow control, parametric exploration and
+            design optimisation, and raise new questions about what the learnt latent space reveals of the flow
+            dynamics.
           </p>
         </div>
       </div>
     </div>
-    <!--/ Abstract. -->
+  </div>
+</section>
+
+
+<!-- ===================================================================== -->
+<!-- CONTRIBUTIONS                                                         -->
+<!-- ===================================================================== -->
+<section class="section section-tight">
+  <div class="container is-max-desktop">
+    <div class="columns contributions">
+      <div class="column">
+        <div class="contrib-card">
+          <span class="icon is-large"><i class="fas fa-compress-arrows-alt fa-2x"></i></span>
+          <h3 class="title is-5">β-VAE-GAN for wall turbulence</h3>
+          <p>An adversarial loss on top of the β-VAE keeps the high-wavenumber content that a squared-error loss averages away. This is its first application to wall-bounded turbulence.</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="contrib-card">
+          <span class="icon is-large">
+            <!-- Custom icon: a time series ending in a point probe (dot on the right) -->
+            <svg class="custom-icon" viewBox="3 10 36 20" fill="none" stroke="currentColor" stroke-width="3"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="34" cy="20" r="4.2" fill="currentColor" stroke="none"/>
+              <path d="M28 20H25L22 12L18 28L14 16L11 22H5"/>
+            </svg>
+          </span>
+          <h3 class="title is-5">Sensor-conditioned Transformer</h3>
+          <p>AdaLN-Zero modulation, adapted to physical sensor time series, corrects the autoregressive rollout at every step and prevents distributional drift.</p>
+        </div>
+      </div>
+      <div class="column">
+        <div class="contrib-card">
+          <span class="icon is-large"><i class="fas fa-wave-square fa-2x"></i></span>
+          <h3 class="title is-5">A physically interpretable latent space</h3>
+          <p>The four latent variables separate the slow regeneration cycle from the convection of streak undulations, and the forecast reproduces active and quiescent phases.</p>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
 
 
 <section class="section">
   <div class="container is-max-desktop">
 
+    <!-- =================================================================== -->
+    <!-- MINIMAL FLOW UNIT                                                   -->
+    <!-- =================================================================== -->
     <div class="columns is-centered">
-      <!-- Framework Overview. -->
-      <div class="column", id="framework">
-        <div class="content has-text-justified">
-          <h2 class="title is-3">Framework Overview</h2>
-          <p>
-            The VIVALDy framework combines two complementary architectures: a hybrid β-VAE-GAN to extract dominant flow features
-            into a compact latent space, and a bidirectional transformer to map sensor measurements to the flow variables identified
-            by this latent space. Masked convolutions are employed within the CNN architectures in the encoder and discriminator to handle
-            solid structures in the convolution field of view, significantly improving solid-fluid interface reconstruction quality. The use of the hybrid
-            architecture allows combining the individual strengths of both models, resulting in improved distribution-preserving
-            properties compared to a standard VAE and a more structured, informative latent space than that offered by a standalone GAN.
-          </p>
-          <p>
-            <strong>Training Phase:</strong> The β-VAE and discriminator are trained simultaneously in a generative adversarial framework, where the decoder serves as generator and receives evaluative feedback from the discriminator. A transformer model is then trained to predict latent variables evolution using only cylinder displacement as input.
-          </p>
-          <p>
-            <strong>Inference Phase:</strong> Only the transformer and decoder are retained to generate flow field predictions from displacement signals, enabling real-time flow reconstruction from minimal sensor data.
-          </p>
-          <img src="./static/images/GraphicVivaldy.png"
-               alt="VIVALDy Framework Architecture"
-               style="max-width: 100%; height: auto; margin: 2rem 0;">
-        </div>
-      </div>
-      <!--/ Framework Overview. -->
-    </div> 
-    <div class="columns is-centered">
-      <!-- Vortex-Induced Vibration Dataset. -->
-      <div class="column", id="dataset">
-        <h2 class="title is-3">Dataset</h2>
-        <div class="content has-text-justified">
-          <p>
-            The framework is tested on a problem relevant to vortex-induced vibration (VIV)
-            energy harvesting systems: the turbulent flow around a one-degree-of-freedom moving cylinder.
-            For this purpose we acquired velocity fields of an elastically mounted cylinder undergoing
-            VIV in the cross-flow direction using time-resolved Particle Image Velocimetry (PIV).
-            The acquired PIV measurements define a dataset of two-dimensional snapshots including the streamwise and crosswise velocity
-            fields for a total of 17 operating conditions. To evaluate the model's generalization capability to unseen
-            flow dynamics the test set comprises 5 operating conditions entirely separate from the training and validation sets.
-          </p>
-        </div>
-
-        <!-- Two images side by side -->
-        <div class="columns">
-          <div class="column is-half">
-            <img src="./static/images/exp_dataset.png"
-                 alt="Experimental Set-up"
-                 style="width: 70%; height: auto;">
+      <div class="column" id="mfu">
+        <h2 class="title is-3">The Minimal Flow Unit</h2>
+        <div class="columns is-vcentered">
+          <div class="column is-7">
+            <div class="content has-text-justified">
+              <p>
+                The Minimal Flow Unit (Jiménez &amp; Moin, 1991) is the smallest periodic channel that still sustains
+                near-wall turbulence. It keeps the self-sustaining cycle of streaks and quasi-streamwise vortices
+                and removes the large outer-layer scales. This makes it a useful test case for reduced-order
+                models: the dynamics are chaotic and intermittent, but the cost of a simulation stays manageable.
+              </p>
+              <p>
+                We simulate a channel at Re<sub>τ</sub>&nbsp;=&nbsp;200 in a domain of
+                0.6πh&nbsp;×&nbsp;2h&nbsp;×&nbsp;0.18πh (L<sub>x</sub><sup>+</sup>&nbsp;≈&nbsp;377,
+                L<sub>z</sub><sup>+</sup>&nbsp;≈&nbsp;113) with the GPU spectral-element solver SOD2D.
+                The model sees the three velocity fluctuations on the wall-parallel plane at
+                y<sup>+</sup>&nbsp;=&nbsp;14, where turbulent kinetic energy peaks.
+              </p>
+              <p>
+                Two separate DNS runs of about 17,300&nbsp;t<sup>+</sup> each, sampled every Δt<sup>+</sup>&nbsp;≈&nbsp;1,
+                are used: the first for training and validation, the second only for testing.
+                Training and test sets have almost identical POD entropy (0.6974 and 0.6975), so the test
+                errors measure generalisation rather than a difference in flow complexity.
+              </p>
+            </div>
           </div>
-          <div class="column is-half">
-            <img src="./static/images/cases_dataset.png"
-                 alt="Experimental Dataset Cases"
-                 style="width: 75%; height: auto;">
+          <div class="column is-5 has-text-centered">
+            <img src="./static/gif/mfu_domain.gif" alt="Q-criterion iso-surfaces in the Minimal Flow Unit domain"
+                 class="mfu-figure" loading="lazy">
+            <p class="media-caption">
+              The MFU domain (0.6πh&nbsp;×&nbsp;2h&nbsp;×&nbsp;0.18πh): Q-criterion iso-surfaces coloured by streamwise velocity.
+            </p>
           </div>
         </div>
       </div>
-      <!--/ Vortex-Induced Vibration Dataset. -->
     </div>
+
+
+    <!-- =================================================================== -->
+    <!-- FRAMEWORK                                                           -->
+    <!-- =================================================================== -->
     <div class="columns is-centered">
-      <!-- Informative Latent Space. -->
-      <div class="column", id="latent-space">
-        <h2 class="title is-3">Informative Latent Space</h2>
+      <div class="column" id="framework">
+        <h2 class="title is-3">Framework</h2>
         <div class="content has-text-justified">
           <p>
-            When tested on two operating conditions of the test-set within the resonance region, the learned 
-            latent variables encode dynamical signatures characteristic of each flow regime. 
-            The latent space reveals stable annular orbits for the "lower branch" regime, 
-            characterized by highly periodic oscillations, and more irregular orbits for the 
-            "upper branch" regime, which exhibits a more irregular dynamics. This demonstrates that the latent space topology 
-            preserves significant information about the underlying flow physics while providing 
-            a geometrical interpretation of the flow dynamics.
+            The framework splits the problem into two tasks: <b>compression</b>
+            and <b>forecasting</b>. A β-VAE-GAN learns to describe each velocity field with
+            just four latent variables. A sensor-conditioned Transformer then learns how these four variables
+            evolve in time.
           </p>
           <p>
-            The transformer predictions successfully capture these target attractor shapes, although volumetric contractions 
-            are observed, interpreted as implicit model regularization that prioritizes dominant 
-            dynamical structures over reproducing the full spectrum due to limited training data 
-            from the experimental dataset. 
+            The two parts are trained one after the other. The β-VAE-GAN is trained first, on
+            individual snapshots, with the sole objective of reconstructing the flow faithfully. Its weights are then
+            frozen, and the Transformer is trained on the resulting latent trajectories. If both were trained together,
+            the latent space could drift towards whatever features make the next step easiest to predict, rather than
+            those that best represent the flow physics. Keeping the stages separate makes the latent variables a
+            description of the turbulent structures themselves. The forecaster can also be changed or retrained without
+            touching the compression.
           </p>
         </div>
 
-        <!-- Two GIFs side by side -->
-        <div class="columns">
-          <div class="column is-half has-text-centered">
-            <img src="./static/gif/latent_space_upper.gif"
-                 alt="Latent Space 3D View - Upper Branch"
-                 style="width: 80%; height: auto;">
-            <p class="has-text-weight-semibold" style="margin-top: 0.5rem;">Upper Branch</p>
+        <img src="./static/images/framework.png" class="figure-wide" loading="lazy"
+             alt="Framework schematic: the encoder compresses the DNS field to a latent state, the sensor-conditioned forecaster predicts the next latent state, the generator decodes it, and a discriminator judges the reconstruction">
+        <p class="media-caption">
+          <b>Training:</b> the encoder, generator and discriminator are trained together as a β-VAE-GAN; the forecaster
+          (the sensor-conditioned Transformer) is then trained on the frozen latent space.
+          <b>Inference:</b> only the forecaster and the generator are used. The circles on the DNS field mark the three
+          sensors, whose readings (dotted line) condition every forecasting step.
+        </p>
+
+        <div class="columns stage-cards">
+          <div class="column">
+            <div class="stage-card">
+              <span class="stage-step">1</span>
+              <h3 class="title is-5">Compress: β-VAE-GAN</h3>
+              <p>
+                A convolutional β-VAE maps each 48&nbsp;×&nbsp;24&nbsp;×&nbsp;3 snapshot to
+                d<sub>ζ</sub>&nbsp;=&nbsp;4 latent variables. The decoder also acts as the generator of a GAN,
+                and a PatchGAN discriminator judges whether the reconstructed fields look statistically like real ones.
+                Circular padding enforces the periodic boundary conditions.
+              </p>
+            </div>
           </div>
-          <div class="column is-half has-text-centered">
-            <img src="./static/gif/latent_space_lower.gif"
-                 alt="Latent Space 3D View - Lower Branch"
-                 style="width: 80%; height: auto;">
-            <p class="has-text-weight-semibold" style="margin-top: 0.5rem;">Lower Branch</p>
+          <div class="column">
+            <div class="stage-card">
+              <span class="stage-step">2</span>
+              <h3 class="title is-5">Forecast: sensor-conditioned Transformer</h3>
+              <p>
+                From a context window of T&nbsp;=&nbsp;128 past latent states, the Transformer predicts the next one
+                and feeds it back autoregressively. Three sensors measuring (u′, v′, w′) modulate every block through
+                <b>AdaLN-Zero</b>. <b>Easy Attention</b> replaces query-key attention with a learnt temporal mixing matrix.
+              </p>
+            </div>
+          </div>
+          <div class="column">
+            <div class="stage-card">
+              <span class="stage-step">3</span>
+              <h3 class="title is-5">Inference</h3>
+              <p>
+                The encoder is used only once, to fill the first 128&nbsp;t<sup>+</sup> window. After that, every field
+                is decoded from the forecast latent state, with the sensor readings as the only input from the flow.
+                The discriminator is not used at inference.
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      <!--/ Informative Latent Space. -->
-    </div> 
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- COMPRESSION                                                         -->
+    <!-- =================================================================== -->
     <div class="columns is-centered">
-      <!-- Vivaldy Inference. -->
-      <div class="column", id="vivaldy-inference">
-        <h2 class="title is-3">Vivaldy Inference</h2>
+      <div class="column" id="compression">
+        <h2 class="title is-3">Compression: Why Add a GAN?</h2>
         <div class="content has-text-justified">
           <p>
-            When VIVALDy is used in its inference phase, it reconstructs the turbulent velocity fields governing 
-            the vortex-induced vibration problem from just the cylinder displacement.
-          </p>
-          <p>
-            Comparing phase-averaged reconstructed flow fields to the acquired data from the test set 
-            shows that VIVALDy's predictions closely align with ground truth, accurately reproducing 
-            the coherent velocity structures that define the dominant wake topology. This demonstrates 
-            the framework's ability to capture essential flow physics from just the cylinder displacement signal.
+            Reducing a field to a few scalars means that one reconstruction stands for many fields with the same
+            large-scale features. With a squared-error loss, the best reconstruction is their average. The
+            large-scale structures, which are in phase across these fields, survive the average. The small-scale
+            fluctuations, whose phase varies from field to field, cancel out. The adversarial term counteracts this
+            by rewarding reconstructions that are statistically consistent with real fields.
           </p>
         </div>
 
-        <!-- Two GIFs side by side -->
-        <div class="columns">
-          <div class="column is-half has-text-centered">
-            <img src="./static/gif/flow_animation_truth.gif"
-                 alt="Phase Average Acquired Data - Lower Branch"
-                 style="width: 100%; height: auto;">
-            <p class="has-text-weight-semibold" style="margin-top: 0.5rem;">Acquired Fields</p>
+        <!-- Interactive comparison slider: DNS (right) vs selected model (left) -->
+        <div class="case-selector" role="tablist">
+          <button class="case-btn active" data-model="vaegan">β-VAE-GAN</button>
+          <button class="case-btn" data-model="vae">β-VAE</button>
+          <button class="case-btn" data-model="pod">POD</button>
+        </div>
+
+        <div class="image-comparison-container">
+          <div class="image-comparison-wrapper" id="compression-compare">
+            <img class="comparison-image ground-truth" src="./static/images/compression/dns.png" alt="DNS snapshot" draggable="false">
+            <img class="comparison-image reconstruction" src="./static/images/compression/vaegan_d4.png" alt="Reconstruction" draggable="false">
+            <div class="comparison-slider"><div class="slider-handle"></div></div>
+            <div class="comparison-labels">
+              <span class="label-left" id="compare-label">β-VAE-GAN (d<sub>ζ</sub> = 4)</span>
+              <span class="label-right">DNS</span>
+            </div>
           </div>
-          <div class="column is-half has-text-centered">
-            <img src="./static/gif/flow_animation_pred.gif"
-                 alt="Phase Average Prediction - Lower Branch"
-                 style="width: 100%; height: auto;">
-            <p class="has-text-weight-semibold" style="margin-top: 0.5rem;">Predicted Fields</p>
+          <img src="./static/images/compression/colorbar.png" alt="Colour bar for u′+ from −7 to 7" class="colorbar">
+          <p class="media-caption">
+            u′<sup>+</sup> at y<sup>+</sup>&nbsp;=&nbsp;14 for one test snapshot. Pick a method, then drag the slider to
+            compare it with the DNS.
+          </p>
+        </div>
+
+        <img src="./static/images/compression_metrics.png" class="figure-wide" loading="lazy"
+             alt="Turbulent kinetic energy recovery and latent correlation versus latent dimension for POD, beta-VAE and beta-VAE-GAN">
+        <p class="media-caption">
+          Test set, as a function of the latent dimension. Left: fraction of turbulent kinetic energy recovered, E<sub>k</sub><sup>+</sup>.
+          Right: mean absolute correlation between latent variables, r̄<sub>ζ</sub>. POD is uncorrelated by construction, so it is not shown on the right.
+        </p>
+
+        <div class="columns is-vcentered">
+          <div class="column is-8">
+            <div class="content has-text-justified">
+              <p>
+                At every latent dimension the non-linear models beat POD, and the β-VAE-GAN beats the β-VAE. The gap is
+                largest under strong compression. At d<sub>ζ</sub>&nbsp;=&nbsp;2, POD recovers less than 60% of the test-set
+                turbulent kinetic energy and the β-VAE less than 70%, while the β-VAE-GAN recovers more than 80%.
+              </p>
+              <p>
+                The higher fidelity does not cost disentanglement: the latent variables of the β-VAE-GAN are about as weakly
+                correlated as those of the β-VAE. The spanwise autocorrelation of u′ also matches the DNS up to
+                the zero crossing, even at d<sub>ζ</sub>&nbsp;=&nbsp;4.
+              </p>
+            </div>
+          </div>
+          <div class="column is-4">
+            <div class="content">
+              <table class="table is-narrow is-fullwidth results-table">
+                <thead><tr><th>d<sub>ζ</sub> = 4</th><th>E<sub>k</sub><sup>+</sup> (test)</th></tr></thead>
+                <tbody>
+                  <tr><td>β-VAE</td><td>76%</td></tr>
+                  <tr class="is-highlight"><td>β-VAE-GAN</td><td>88%</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>
-      <!--/ Vivaldy Inference. -->
-    </div> 
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- LATENT SPACE                                                        -->
+    <!-- =================================================================== -->
+    <div class="columns is-centered">
+      <div class="column" id="latent-space">
+        <h2 class="title is-3">An Interpretable Latent Space</h2>
+        <div class="content has-text-justified">
+          <p>
+            The β-VAE-GAN is trained on randomly shuffled snapshots, so it never sees time. Its four latent
+            variables, ranked by activity, still split the time scales of the near-wall cycle:
+          </p>
+        </div>
+
+        <div class="latent-cards">
+          <div class="latent-card slow">
+            <div class="latent-name">ζ<sub>1</sub>, ζ<sub>2</sub></div>
+            <div class="latent-scale">T<sup>+</sup> = O(10<sup>3</sup>)</div>
+            <p>Slow intermittency of the regeneration cycle: about 97% of their variance lies below f<sup>+</sup>&nbsp;=&nbsp;0.01.</p>
+          </div>
+          <div class="latent-card mixed">
+            <div class="latent-name">ζ<sub>3</sub></div>
+            <div class="latent-scale">27% slow / 73% fast</div>
+            <p>Coupling between the slow evolution of the streak and the amplitude of its convected undulations.</p>
+          </div>
+          <div class="latent-card fast">
+            <div class="latent-name">ζ<sub>4</sub></div>
+            <div class="latent-scale">T<sup>+</sup> ≈ 31</div>
+            <p>Convective signature of the streak undulations, at a frequency set by the streamwise length of the domain.</p>
+          </div>
+        </div>
+
+        <div class="columns is-vcentered">
+          <div class="column is-5 has-text-centered">
+            <img src="./static/images/latent_spectra.png" loading="lazy"
+                 alt="Premultiplied power spectral densities and PDFs of the four latent variables">
+            <p class="media-caption">
+              Premultiplied spectra (left) and PDFs (right) of ζ<sub>1</sub>…ζ<sub>4</sub>: Transformer forecast (sea-green)
+              against encoded DNS (grey).
+            </p>
+          </div>
+          <div class="column is-7">
+            <div class="content has-text-justified">
+              <p>
+                The spectral hierarchy of the latent variables follows the time scales of the flow. ζ<sub>1</sub> and
+                ζ<sub>2</sub> carry the slow alternation of active and quiescent phases, and ζ<sub>4</sub> peaks at the
+                convective frequency of the streak undulations. The Transformer reproduces these spectra over the whole
+                horizon. It shifts the convective peak only slightly, to T<sup>+</sup>&nbsp;≈&nbsp;33, and damps the fastest
+                fluctuations, which carry little latent variance.
+              </p>
+              <p>
+                These spectra also match the DNS spectra of (−u′v′)<sup>+</sup><sub>max</sub> and of u′<sup>+</sup>. This
+                suggests that the latent manifold is a physically meaningful set of coordinates for the flow, and not only a
+                statistical compression of the fields.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <img src="./static/images/scale_coupling.png" class="figure-medium" loading="lazy"
+             alt="Joint PDFs of low- and high-frequency components of zeta 3 and u prime">
+        <p class="media-caption">
+          Joint PDFs of the low-pass and high-pass components of ζ<sub>3</sub> (left) and of u′<sup>+</sup> (right).
+          In both, the high-frequency fluctuations shrink when the low-frequency component is strongly negative,
+          i.e. when a coherent low-speed streak is present. ζ<sub>3</sub> therefore encodes the coupling between the
+          slow streak evolution and its convected undulations.
+        </p>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- FORECASTING                                                         -->
+    <!-- =================================================================== -->
+    <div class="columns is-centered">
+      <div class="column" id="forecasting">
+        <h2 class="title is-3">Long-Horizon Forecasting</h2>
+        <div class="content has-text-justified">
+          <p>
+            In end-to-end inference, the Transformer generates the latent trajectory and the generator decodes it into
+            velocity fields. Over the full test horizon the model recovers <b>82%</b> of the turbulent kinetic energy,
+            against an upper bound of 88% for direct compression. The POD entropy follows the same pattern: it falls
+            from 0.6975 to 0.6159 at the compression stage, and only to 0.6041 after forecasting. Most of the
+            information loss therefore comes from the bottleneck, not from the Transformer.
+          </p>
+        </div>
+
+        <div class="columns is-variable is-2 video-pair">
+          <div class="column has-text-centered">
+            <video class="sync-video" autoplay muted loop playsinline preload="auto"
+                   src="./static/videos/teaser_dns.mp4" poster="./static/videos/teaser_dns_poster.png"
+                   aria-label="DNS streamwise velocity fluctuation at y+ = 14"></video>
+            <p class="media-caption"><b>DNS</b> (test set)</p>
+          </div>
+          <div class="column has-text-centered">
+            <video class="sync-video" autoplay muted loop playsinline preload="auto"
+                   src="./static/videos/teaser_pred.mp4" poster="./static/videos/teaser_pred_poster.png"
+                   aria-label="Forecast streamwise velocity fluctuation at y+ = 14"></video>
+            <p class="media-caption"><b>Forecast</b> from the three sensors</p>
+          </div>
+        </div>
+        <img src="./static/images/teaser_colorbar.png" alt="Colour bar for u′+ from −6.5 to 6.5" class="colorbar">
+        <p class="media-caption">
+          u′<sup>+</sup> at y<sup>+</sup>&nbsp;=&nbsp;14, one frame per t<sup>+</sup>, more than
+          15,000&nbsp;t<sup>+</sup> into the autoregressive rollout. The circles mark the three sensors.
+        </p>
+
+        <img src="./static/images/uv_max_timeseries.png" class="figure-medium" loading="lazy"
+             alt="Time series of the spatial maximum of the Reynolds shear stress, DNS versus prediction, with three zoomed windows">
+        <p class="media-caption">
+          The spatial maximum of the instantaneous Reynolds shear stress rises and falls with the DNS over the whole
+          forecast horizon. This includes the long quiescent interval near t<sup>+</sup>&nbsp;≈&nbsp;15,000, which comes
+          more than 14,000&nbsp;t<sup>+</sup> after the model last saw a reference field.
+        </p>
+
+        <div class="columns is-vcentered">
+          <div class="column is-6">
+            <img src="./static/images/quadrant_analysis.png" loading="lazy"
+                 alt="Quadrant analysis of the Reynolds shear stress, DNS versus prediction">
+          </div>
+          <div class="column is-6">
+            <div class="content has-text-justified">
+              <p>
+                <b>Quadrant analysis.</b> The predicted joint PDF of (u′, v′) is elongated along the Q2–Q4 axis, as in the DNS.
+                The model therefore captures the most frequent ejections and sweeps.
+                The combined Reynolds shear stress follows the reference up to a hole size of F&nbsp;=&nbsp;3.
+              </p>
+              <p>
+                The model under-predicts the rarest, most intense events: the peak amplitude of
+                (−u′v′)<sup>+</sup><sub>max</sub> is about 36% lower than in the DNS. This deficit stays constant along the rollout,
+                so it comes from the compression stage rather than from drift in the forecast.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- =================================================================== -->
+    <!-- LIMITATIONS & OUTLOOK                                               -->
+    <!-- =================================================================== -->
+    <div class="columns is-centered">
+      <div class="column" id="outlook">
+        <h2 class="title is-3">Limitations &amp; Outlook</h2>
+        <div class="content has-text-justified">
+          <ul>
+            <li>
+              <b>Size of the latent space.</b> With d<sub>ζ</sub>&nbsp;=&nbsp;12, the recovered Reynolds shear stress rises from
+              57% to 78% of the DNS value, and the wall-normal fluctuations and the Q2/Q4 tails are partly restored. The
+              Transformer barely grows. The right size depends on the application: a closed-loop controller may need only the
+              energetic large scales, while rare extreme events need a richer latent space.
+            </li>
+            <li>
+              <b>From planes to volumes.</b> The model currently compresses a single wall-parallel plane. Compressing
+              three-dimensional volumes would capture the full geometry of the quasi-streamwise vortices.
+            </li>
+            <li>
+              <b>Scaling up.</b> The next step is larger domains and higher Re<sub>τ</sub>, to see how the required latent
+              dimension grows with the complexity of the flow.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
 
-<!-- <section class="section" id="BibTeX">
+<!-- ===================================================================== -->
+<!-- BIBTEX                                                                -->
+<!-- ===================================================================== -->
+<section class="section" id="BibTeX">
   <div class="container is-max-desktop content">
     <h2 class="title">BibTeX</h2>
-    <pre><code>@article{park2021nerfies,
-  author    = {Park, Keunhong and Sinha, Utkarsh and Barron, Jonathan T. and Bouaziz, Sofien and Goldman, Dan B and Seitz, Steven M. and Martin-Brualla, Ricardo},
-  title     = {Nerfies: Deformable Neural Radiance Fields},
-  journal   = {ICCV},
-  year      = {2021},
+    <pre class="bibtex"><code>@article{tonioni2026minimal,
+  author  = {Tonioni, Niccol{\`o} and Agostini, Lionel and
+             Sanchis-Agudo, Marcial and Umair, Mohammad and
+             Kerherv{\'e}, Franck and Cordier, Laurent and
+             Vinuesa, Ricardo},
+  title   = {A Hybrid Generative Reduced-Order Model for the Minimal Flow Unit},
+  journal = {International Journal of Heat and Fluid Flow},
+  volume  = {122},
+  pages   = {110784},
+  year    = {2026},
+  doi     = {10.1016/j.ijheatfluidflow.2026.110784}
 }</code></pre>
   </div>
-</section> -->
+</section>
 
 
 <footer class="footer">
   <div class="container">
     <div class="content has-text-centered">
-      <a class="icon-link"
-         href="./static/paper/">
-        <i class="fas fa-file-pdf"></i>
-      </a>
-      <a class="icon-link" href="https://github.com/NiccoloTonioni/" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
+      <a class="icon-link" href="https://www.sciencedirect.com/science/article/pii/S0142727X26005503"><i class="fas fa-file-pdf"></i></a>
+      <a class="icon-link" href="https://github.com/NiccoloTonioni/minimal_channel_generative_code"><i class="fab fa-github"></i></a>
     </div>
     <div class="columns is-centered">
       <div class="column is-8">
-        <div class="content">
+        <div class="content has-text-centered">
           <p>
-            This website is based on <a href="https://nerfies.github.io"> the Nerfies website template</a>, which is licensed under a 
-            <a rel="license" 
-            href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
+            This website is based on <a href="https://nerfies.github.io">the Nerfies website template</a>, licensed under a
+            <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
           </p>
         </div>
       </div>

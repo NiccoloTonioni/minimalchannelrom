@@ -1,78 +1,72 @@
-window.HELP_IMPROVE_VIDEOJS = false;
+document.addEventListener('DOMContentLoaded', function () {
 
-var INTERP_BASE = "./static/interpolation/stacked";
-var NUM_INTERP_FRAMES = 240;
+  // ---------------------------------------------------------------------
+  // Mobile navbar burger
+  // ---------------------------------------------------------------------
+  document.querySelectorAll('.navbar-burger').forEach(function (burger) {
+    burger.addEventListener('click', function () {
+      burger.classList.toggle('is-active');
+      document.querySelectorAll('.navbar-menu').forEach(function (m) { m.classList.toggle('is-active'); });
+    });
+  });
 
-var interp_images = [];
-function preloadInterpolationImages() {
-  for (var i = 0; i < NUM_INTERP_FRAMES; i++) {
-    var path = INTERP_BASE + '/' + String(i).padStart(6, '0') + '.jpg';
-    interp_images[i] = new Image();
-    interp_images[i].src = path;
+  // ---------------------------------------------------------------------
+  // Keep side-by-side videos (class "sync-video") in lockstep
+  // ---------------------------------------------------------------------
+  var videos = Array.prototype.slice.call(document.querySelectorAll('video.sync-video'));
+  if (videos.length > 1) {
+    var leader = videos[0];
+    setInterval(function () {
+      videos.slice(1).forEach(function (v) {
+        if (Math.abs(v.currentTime - leader.currentTime) > 0.1) { v.currentTime = leader.currentTime; }
+      });
+    }, 500);
   }
-}
 
-function setInterpolationImage(i) {
-  var image = interp_images[i];
-  image.ondragstart = function() { return false; };
-  image.oncontextmenu = function() { return false; };
-  $('#interpolation-image-wrapper').empty().append(image);
-}
+  // ---------------------------------------------------------------------
+  // Compression comparison slider (DNS vs selected model)
+  // ---------------------------------------------------------------------
+  var container = document.getElementById('compression-compare');
+  if (!container) { return; }
 
+  var slider = container.querySelector('.comparison-slider');
+  var recon = container.querySelector('.reconstruction');
+  var label = document.getElementById('compare-label');
+  var buttons = document.querySelectorAll('.case-btn[data-model]');
 
-$(document).ready(function() {
-    // Check for click events on the navbar burger icon
-    $(".navbar-burger").click(function() {
-      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
-      $(".navbar-burger").toggleClass("is-active");
-      $(".navbar-menu").toggleClass("is-active");
+  var models = {
+    vaegan: { src: './static/images/compression/vaegan_d4.png', label: 'β-VAE-GAN (d<sub>ζ</sub> = 4)' },
+    vae:    { src: './static/images/compression/vae_d4.png',    label: 'β-VAE (d<sub>ζ</sub> = 4)' },
+    pod:    { src: './static/images/compression/pod_d4.png',    label: 'POD (4 modes)' }
+  };
 
+  buttons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      buttons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      var m = models[btn.dataset.model];
+      recon.style.opacity = '0';
+      setTimeout(function () {
+        recon.src = m.src;
+        label.innerHTML = m.label;
+        recon.style.opacity = '1';
+      }, 150);
     });
+  });
 
-    var options = {
-			slidesToScroll: 1,
-			slidesToShow: 3,
-			loop: true,
-			infinite: true,
-			autoplay: false,
-			autoplaySpeed: 3000,
-    }
+  var dragging = false;
+  function setPosition(clientX) {
+    var rect = container.getBoundingClientRect();
+    var pct = Math.max(0, Math.min(100, (clientX - rect.left) / rect.width * 100));
+    slider.style.left = pct + '%';
+    recon.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+  }
 
-		// Initialize all div with carousel class
-    var carousels = bulmaCarousel.attach('.carousel', options);
-
-    // Loop on each carousel initialized
-    for(var i = 0; i < carousels.length; i++) {
-    	// Add listener to  event
-    	carousels[i].on('before:show', state => {
-    		console.log(state);
-    	});
-    }
-
-    // Access to bulmaCarousel instance of an element
-    var element = document.querySelector('#my-element');
-    if (element && element.bulmaCarousel) {
-    	// bulmaCarousel instance is available as element.bulmaCarousel
-    	element.bulmaCarousel.on('before-show', function(state) {
-    		console.log(state);
-    	});
-    }
-
-    /*var player = document.getElementById('interpolation-video');
-    player.addEventListener('loadedmetadata', function() {
-      $('#interpolation-slider').on('input', function(event) {
-        console.log(this.value, player.duration);
-        player.currentTime = player.duration / 100 * this.value;
-      })
-    }, false);*/
-    preloadInterpolationImages();
-
-    $('#interpolation-slider').on('input', function(event) {
-      setInterpolationImage(this.value);
-    });
-    setInterpolationImage(0);
-    $('#interpolation-slider').prop('max', NUM_INTERP_FRAMES - 1);
-
-    bulmaSlider.attach();
-
-})
+  container.addEventListener('pointerdown', function (e) {
+    dragging = true;
+    setPosition(e.clientX);
+    e.preventDefault();
+  });
+  document.addEventListener('pointermove', function (e) { if (dragging) { setPosition(e.clientX); } });
+  document.addEventListener('pointerup', function () { dragging = false; });
+});
