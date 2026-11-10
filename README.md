@@ -30,7 +30,7 @@ If you find this work useful, please cite:
 ## Related work
 
 - **VIVALDy**: A hybrid generative reduced-order model for turbulent flows, applied to vortex-induced vibrations.
-  *Phys. Rev. Fluids* 11, 044902 (2026). [Website](https://vivaldy.github.io) · [DOI](https://doi.org/10.1103/t7d2-mv5c)
+  *Phys. Rev. Fluids* 11, 044902 (2026). [Website](https://niccolotonioni.github.io/vivaldy/) · [DOI](https://doi.org/10.1103/t7d2-mv5c)
 
 ## Website structure
 
